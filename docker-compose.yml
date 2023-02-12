@@ -1,0 +1,80 @@
+version: "3"
+services:
+  #PHP Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: digitalocean.com/php
+    container_name: app_${COMPOSE_ENV}
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: ${COMPOSE_SERVICE_TAGS}
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/supervisor/:/etc/supervisor/conf.d/
+    networks:
+      - network_${COMPOSE_ENV}
+
+  #Nginx Service
+  service:
+    image: nginx:alpine
+    container_name: service_${COMPOSE_ENV}
+    restart: unless-stopped
+    tty: true
+    environment:
+      TZ: "Asia/Bangkok"
+    ports:
+      - "${COMPOSE_SERVICE_PORT}:80"
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www:cached
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - network_${COMPOSE_ENV}
+
+  db:
+    platform: linux/x86_64
+    image: mysql:8.0
+    container_name: db_${COMPOSE_ENV}
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "${COMPOSE_MYSQL_PORT}:3306"
+    environment:
+      MYSQL_DATABASE: shopping
+      MYSQL_USER: demon
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - mysql_data_${COMPOSE_ENV}:/var/lib/mysql
+    networks:
+      - network_${COMPOSE_ENV}
+
+  #phpMyAdmin Service
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+        MYSQL_USERNAME: root
+        MYSQL_ROOT_PASSWORD: root
+        PMA_HOST: db_${COMPOSE_ENV}
+    ports:
+        - ${COMPOSE_PHPMYADMIN_PORT}:80
+    networks:
+        - network_${COMPOSE_ENV}
+    depends_on:
+        - mysql
+
+#Docker Networks
+networks:
+  network_local:
+    driver: bridge
+
+volumes:
+  mysql_data_local:
+    driver: local
