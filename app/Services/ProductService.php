@@ -25,12 +25,28 @@ class ProductService
         return $this->productRepository->find($id);
     }
 
+    public function getOneOrFail($where = [])
+    {
+        return $this->productRepository->findOneOrFail($where);
+    }
+
     public function create($data = [])
     {
         $image = $data['image'];
         $data['image'] = $image->store('products', 'public');
+        $product = $this->productRepository->create($data);
 
-        return $this->productRepository->create($data);
+        if ($product) {
+            if (isset($data['product_categories'])) {
+                foreach ($data['product_categories'] as $category_id) {
+                    $product->categories()->create([
+                        'category_id' => $category_id
+                    ]);
+                }
+            }
+        }
+
+        return $product;
     }
 
     public function update($data = [], $id)
@@ -40,7 +56,23 @@ class ProductService
             $data['image'] = $image->store('products', 'public');
         }
 
-        return $this->productRepository->update($data, $id);
+        $product = $this->productRepository->update($data, $id);
+
+        if (isset($data['product_categories'])) {
+            $category_ids = $data['product_categories'];
+
+            $product->categories()->whereNotIn('category_id', $category_ids)->delete();
+
+            foreach ($data['product_categories'] as $category_id) {
+                $product->categories()->updateOrCreate([
+                    'category_id' => $category_id
+                ]);
+            }
+        } else {
+            $product->categories()->delete();
+        }
+
+        return $product;
     }
 
     public function delete($id)
@@ -52,6 +84,12 @@ class ProductService
     {
         if (isset($search['name'])) {
             $query->where('name', 'like', '%' . $search['name'] . '%');
+        }
+
+        if (isset($search['category_id'])) {
+            $query->whereHas('categories', function ($sub_query) use ($search) {
+                $sub_query->where('category_id', $search['category_id']);
+            });
         }
 
         return $query;

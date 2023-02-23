@@ -5,16 +5,19 @@ namespace App\Http\Controllers\Manage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
+use App\Services\CategoryService;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
     protected $productService;
+    protected $categoryService;
 
-    public function __construct(ProductService $productService)
+    public function __construct(ProductService $productService, CategoryService $categoryService)
     {
         $this->productService = $productService;
+        $this->categoryService = $categoryService;
     }
 
     /**
@@ -36,7 +39,9 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('manage.products.create');
+        $categories = $this->categoryService->getAll();
+
+        return view('manage.products.create', compact('categories'));
     }
 
     /**
@@ -74,8 +79,9 @@ class ProductController extends Controller
     public function edit($id)
     {
         $product = $this->productService->getById($id);
+        $categories = $this->categoryService->getAll();
 
-        return view('manage.products.edit', compact('product'));
+        return view('manage.products.edit', compact('product', 'categories'));
     }
 
     /**

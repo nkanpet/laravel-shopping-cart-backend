@@ -326,6 +326,12 @@ return [
             'active' => ['manage/users/*']
         ],
         [
+            'text' => 'Client',
+            'url'  => 'manage/clients',
+            'icon' => 'fas fa-fw fa-users',
+            'active' => ['manage/clients/*']
+        ],
+        [
             'text' => 'ผู้ดูแลระบบ',
             'url'  => 'manage/admins',
             'icon' => 'fas fa-fw fa-user',

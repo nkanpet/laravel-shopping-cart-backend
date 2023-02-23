@@ -1,4 +1,5 @@
-@extends('adminlte::page')
+@extends('layouts.admin')
+@section('plugins.Datatables', true)
 
 @section('content_header')
 <h1>จัดการสินค้า</h1>
@@ -23,7 +24,7 @@
             </div>
 
             <div class="card-body">
-                <table class="table">
+                <table class="table" id="table-products">
                     <thead>
                         <form>
                             <tr id="filters">
@@ -32,6 +33,7 @@
                                 <th>
                                     <input name="name" class="form-control" value="{{ request()->get('name', '') }}" />
                                 </th>
+                                <th></th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
@@ -46,6 +48,7 @@
                             <th>ชื่อ</th>
                             <th>ราคา</th>
                             <th>จำนวน</th>
+                            <th>สถานะ</th>
                             <th>สร้างเมื่อ</th>
                             <th>จัดการ</th>
                         </tr>
@@ -60,6 +63,7 @@
                             <td>{{ $product->name }}</td>
                             <td>{{ number_format($product->price, 0) }}</td>
                             <td>{{ number_format($product->quantity, 0) }}</td>
+                            <td>{{ $product->status }}</td>
                             <td>{{ $product->created_at }}</td>
                             <td>
                                 <a href="{{ route('manage.products.show', ['product' => $product]) }}" title="ดู">
@@ -86,3 +90,15 @@
     </div>
 </div>
 @stop
+
+@section('custom-js')
+<script type="text/javascript">
+    $('#table-products').DataTable({
+        bSort: false,
+        searching: false,
+        autoWidth: false,
+        bPaginate: false,
+        info: false
+    });
+</script>
+@endsection

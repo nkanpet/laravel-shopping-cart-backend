@@ -34,5 +34,10 @@ class ProductRepositoryEloquent extends BaseRepository implements ProductReposit
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
+
+    public function findOneOrFail($where = [])
+    {
+        return $this->model()::where($where)->firstOrFail();
+    }
     
 }

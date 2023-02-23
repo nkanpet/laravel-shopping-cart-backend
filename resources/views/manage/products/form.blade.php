@@ -1,9 +1,19 @@
 @section('plugins.FileInput', true)
+@section('plugins.Select2', true)
 
+<div class="form-group">
+    {{ Form::label('product category') }}
+    {{ Form::select('product_categories[]', $categories->pluck('name', 'id')->toArray(), $product->categories->pluck('category_id')->toArray(), ['class' => 'form-control', 'id' => 'product_categories', 'placeholder' => '', 'multiple' => 'multiple']) }}
+</div>
 <div class="form-group">
     {{ Form::label('name') }}
     {{ Form::text('name', $product->name ?? '', ['class' => 'form-control', 'id' => 'name']) }}
     {!! $errors->first('name', '<p class="help-block">:message</p>') !!}
+</div>
+<div class="form-group">
+    {{ Form::label('detail') }}
+    {{ Form::text('detail', $product->detail ?? '', ['class' => 'form-control', 'id' => 'detail']) }}
+    {!! $errors->first('detail', '<p class="help-block">:message</p>') !!}
 </div>
 <div class="form-group">
     {{ Form::label('price') }}
@@ -19,6 +29,11 @@
     {{ Form::label('image') }}
     {{ Form::file('image', ['class' => 'form-control']) }}
     {!! $errors->first('image', '<p class="help-block">:message</p>') !!}
+</div>
+<div class="form-group">
+    {{ Form::label('status') }}
+    {{ Form::select('status', Config::get('constants.product_status_options'), $product->status ?? '', ['class' => 'form-control', 'id' => 'status']) }}
+    {!! $errors->first('status', '<p class="help-block">:message</p>') !!}
 </div>
 
 @section('custom-js')
@@ -38,6 +53,11 @@
         initialPreviewAsData: true,
         initialPreviewFileType: 'image',
         initialPreview: "{{ isset($product) ? url(Storage::url($product->image)) : '' }}"
+    });
+
+    $("select[name='product_categories[]']").select2({
+        multiple: true,
+        placeholder: ''
     });
 </script>
 

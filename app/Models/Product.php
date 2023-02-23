@@ -20,6 +20,11 @@ class Product extends Model implements Transformable
      *
      * @var array
      */
-    protected $fillable = ['name', 'price', 'quantity', 'image'];
+    protected $fillable = ['name', 'detail', 'price', 'quantity', 'image', 'status'];
+
+    public function categories()
+    {
+        return $this->hasMany(ProductCategory::class);
+    }
 
 }
