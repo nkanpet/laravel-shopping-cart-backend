@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\V1\AuthController;
+use App\Http\Controllers\API\V1\CartController;
 use App\Http\Controllers\API\V1\CategoryController;
 use App\Http\Controllers\API\V1\ProductController;
 use App\Http\Controllers\API\V1\RegisterController;
@@ -37,4 +38,10 @@ Route::group(['prefix' => 'v1', 'middleware' => 'api:client'], function() {
 
 Route::group(['prefix' => 'v1', 'middleware' => 'auth:user'], function() {
     Route::post('auth/logout', [AuthController::class, 'logout']);
+
+    // Cart
+    Route::get('cart', [CartController::class, 'index']);
+    Route::post('cart', [CartController::class, 'addItem']);
+    Route::patch('cart/item/{id}', [CartController::class, 'updateItem']);
+    Route::delete('cart/item/{id}', [CartController::class, 'deleteItem']);
 });

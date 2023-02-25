@@ -35,4 +35,8 @@ class CartRepositoryEloquent extends BaseRepository implements CartRepository
         $this->pushCriteria(app(RequestCriteria::class));
     }
     
+    public function findLatest($where = [])
+    {
+        return $this->model()::where($where)->latest('created_at')->first();
+    }
 }

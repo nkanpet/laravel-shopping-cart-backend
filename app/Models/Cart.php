@@ -20,6 +20,15 @@ class Cart extends Model implements Transformable
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = ['user_id'];
+    
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
 
+    public function cart_products()
+    {
+        return $this->hasMany(CartProduct::class);
+    }
 }
