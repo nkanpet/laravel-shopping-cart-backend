@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CartAddItemRequest;
 use App\Http\Requests\CartUpdateItemRequest;
 use App\Http\Resources\Cart as CartResource;
+use App\Models\Cart;
 use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -90,6 +91,7 @@ class CartController extends Controller
 
         return response()->json([
             'success' => true,
+            'data' => new CartResource($cart),
             'message' => 'Delete success'
         ], 200);
     }
